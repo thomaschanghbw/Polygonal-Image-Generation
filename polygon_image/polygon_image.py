@@ -12,7 +12,7 @@ def main():
     # TODO: make configurable
     target_image = Image.open("../mona_lisa.png")
 
-    polygon_alg.run_alg(target_image, candidates_per_it)
+    polygon_alg.run_alg(target_image, candidates_per_it, args.threads_enabled)
     # cur_image = util.init_image(target_image)
     # cur_image.show()
 
