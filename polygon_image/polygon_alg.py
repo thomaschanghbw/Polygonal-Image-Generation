@@ -45,9 +45,10 @@ def apply_triangle(to, triangle, target_im):
             pt = (x, y)
             if triangle.contains_pt(pt):
                 num_pts_in_triangle += 1
-                rgb_sums[0] += target_im.getpixel(pt)[0]
-                rgb_sums[1] += target_im.getpixel(pt)[1]
-                rgb_sums[2] += target_im.getpixel(pt)[2]
+                rgb_sums += target_im.getpixel(pt)[:-1]
+                # rgb_sums[0] += target_im.getpixel(pt)[0]
+                # rgb_sums[1] += target_im.getpixel(pt)[1]
+                # rgb_sums[2] += target_im.getpixel(pt)[2]
 
     if num_pts_in_triangle:
         avg_color_in_triangle = rgb_sums // num_pts_in_triangle
@@ -69,7 +70,7 @@ def generate_best_candidate_worker(target_image, cur_image, candidates_per_it, p
         cand_triangle = Triangle.get_random_triangle(im_width, im_height)
         apply_triangle(to=cand_image, triangle=cand_triangle, target_im=target_image)
 
-        cur_loss = np.linalg.norm(target_im_np - np.asarray(cand_image))
+        cur_loss = np.square(target_im_np - np.asarray(cand_image)).mean(axis=None)
         if cur_loss < best_loss:
             best_loss = cur_loss
             best_im = cand_image
@@ -148,8 +149,8 @@ def generate_best_candidate(target_image, cur_image, candidates_per_it, prev_los
 #     return best_im, best_loss
 
 
-def run_alg(target_image, candidates_per_it, threads_enabled):
-    display = Display(target_image)
+def run_alg(target_image, candidates_per_it, threads_enabled, should_show_display):
+    display = Display.get_display(should_show_display, target_image)
     logger = polylogger.Logger()
     starttime = time.time()
 
@@ -161,5 +162,8 @@ def run_alg(target_image, candidates_per_it, threads_enabled):
         cur_image, loss = generate_best_candidate(target_image, cur_image, candidates_per_it, loss, threads_enabled)
         logger.log(cur_image, loss, time.time() - starttime, i)
         display.show(cur_image, "Number of shapes: {}. Loss: {:.4f}".format(i, loss))
+        print("Iteration {}. Loss {}".format(i, loss))
+
+    logger.close()
     # while True:
     #     new_image = generate_best_candidate(target_image, cur_image, candidates_per_it)

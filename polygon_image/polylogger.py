@@ -18,4 +18,7 @@ class Logger:
         self.fh.write(log_string.format(loss, iteration, timestamp))
 
         if iteration % self.iter_steps == 0:
-            print("Need to save")
+            img.save(self.output_dir + "it" + str(iteration) + ".png","PNG")
+
+    def close(self):
+        self.fh.close()

@@ -4,4 +4,4 @@
 ### Run
 ```python polygon_image/polygon_image.py```
 
-Or provide arguments 
+Or provide arguments
